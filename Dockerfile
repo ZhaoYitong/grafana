@@ -67,6 +67,9 @@ COPY .github .github
 
 ENV COMMIT_SHA=${COMMIT_SHA}
 ENV BUILD_BRANCH=${BUILD_BRANCH}
+#配一个国内的源，加快构建
+ENV GO111MODULE=on \
+    GOPROXY="https://goproxy.cn,direct"
 
 RUN make build-go GO_BUILD_TAGS=${GO_BUILD_TAGS} WIRE_TAGS=${WIRE_TAGS}
 
