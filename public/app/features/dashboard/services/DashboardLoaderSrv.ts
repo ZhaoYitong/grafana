@@ -2,7 +2,7 @@ import $ from 'jquery';
 import _, { isFunction } from 'lodash'; // eslint-disable-line lodash/import-scope
 import moment from 'moment'; // eslint-disable-line no-restricted-imports
 
-import { AppEvents, dateMath, UrlQueryValue } from '@grafana/data';
+import { AppEvents, dateMath, UrlQueryValue, urlUtil } from '@grafana/data';
 import { getBackendSrv, locationService } from '@grafana/runtime';
 import { backendSrv } from 'app/core/services/backend_srv';
 import impressionSrv from 'app/core/services/impression_srv';
@@ -35,6 +35,7 @@ export class DashboardLoaderSrv {
   }
 
   loadDashboard(type: UrlQueryValue, slug: string | undefined, uid: string | undefined): Promise<DashboardDTO> {
+    console.log(slug);
     let promise;
 
     if (type === 'script' && slug) {
@@ -78,7 +79,48 @@ export class DashboardLoaderSrv {
             appEvents.emit(AppEvents.alertError, ['Dashboard not found']);
             throw new Error('Dashboard not found');
           }
-          return result;
+
+          const searchParam = urlUtil.getUrlSearchParams() || {};
+          const { viewmode = [] } = searchParam;
+
+          if (Array.isArray(viewmode) && viewmode.indexOf('edit') >= 0) {
+            // 自定义仪表盘
+            return {
+              ...result,
+              meta: {
+                ...result.meta,
+                canSave: true,
+                canEdit: true,
+                canDelete: false,
+                canShare: false,
+                canStar: false,
+                canAdmin: true,
+                canMakeEditable: true,
+                showSettings: false,
+                viewMode: 'edit',
+              },
+            };
+          } else if (Array.isArray(viewmode) && viewmode.indexOf('view') >= 0) {
+            // 查看仪表盘
+            return {
+              ...result,
+              meta: {
+                ...result.meta,
+                canSave: false,
+                canEdit: false,
+                canDelete: false,
+                canShare: false,
+                canStar: false,
+                canAdmin: false,
+                canMakeEditable: false,
+                showSettings: false,
+                viewMode: 'view',
+              },
+            };
+          } else {
+            // 正常访问
+            return result;
+          }
         })
         .catch(() => {
           return this._dashboardLoadFailed('Not found', true);

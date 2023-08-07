@@ -392,6 +392,7 @@ export class UnthemedDashboardPage extends PureComponent<Props, State> {
             isEditable={!!dashboard.meta.canEdit}
             viewPanel={viewPanel}
             editPanel={editPanel}
+            hidePanelMenus={dashboard.meta.viewMode === 'view'}
           />
 
           {inspectPanel && <PanelInspector dashboard={dashboard} panel={inspectPanel} />}

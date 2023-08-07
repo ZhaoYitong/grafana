@@ -163,14 +163,14 @@ export const DashNav = React.memo<Props>((props) => {
 
   const renderLeftActions = () => {
     const { dashboard, kioskMode } = props;
-    const { canStar, canShare, isStarred } = dashboard.meta;
+    const { canStar, canShare, isStarred, viewMode } = dashboard.meta;
     const buttons: ReactNode[] = [];
 
     if (kioskMode || isPlaylistRunning()) {
       return [];
     }
 
-    if (canStar) {
+    if (canStar && !viewMode) {
       let desc = isStarred
         ? t('dashboard.toolbar.unmark-favorite', 'Unmark as favorite')
         : t('dashboard.toolbar.mark-favorite', 'Mark as favorite');
@@ -186,7 +186,7 @@ export const DashNav = React.memo<Props>((props) => {
       );
     }
 
-    if (canShare) {
+    if (canShare && !viewMode) {
       buttons.push(<ShareButton key="button-share" dashboard={dashboard} />);
     }
 

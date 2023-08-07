@@ -6,7 +6,7 @@ import { GrafanaTheme2, PageLayoutType } from '@grafana/data';
 import { useStyles2, LinkButton } from '@grafana/ui';
 import { useGrafana } from 'app/core/context/GrafanaContext';
 import { CommandPalette } from 'app/features/commandPalette/CommandPalette';
-import { KioskMode } from 'app/types';
+import { KioskMode, useSelector } from 'app/types';
 
 import { MegaMenu } from './MegaMenu/MegaMenu';
 import { NavToolbar } from './NavToolbar/NavToolbar';
@@ -17,11 +17,16 @@ import { TOP_BAR_LEVEL_HEIGHT } from './types';
 export interface Props extends PropsWithChildren<{}> {}
 
 export function AppChrome({ children }: Props) {
-  const styles = useStyles2(getStyles);
   const { chrome } = useGrafana();
   const state = chrome.useState();
 
   const searchBarHidden = state.searchBarHidden || state.kioskMode === KioskMode.TV;
+
+  const currentDashboard = useSelector((state) => state.dashboard);
+  const currentMeta = currentDashboard.getModel()?.meta || {};
+  const viewMode = currentMeta.viewMode || '';
+  const isDefaultView = ['edit', 'view'].indexOf(viewMode) < 0;
+  const styles = useStyles2((themes: GrafanaTheme2) => getStyles(themes, isDefaultView));
 
   const contentClass = cx({
     [styles.content]: true,
@@ -41,7 +46,7 @@ export function AppChrome({ children }: Props) {
             Skip to main content
           </LinkButton>
           <div className={cx(styles.topNav)}>
-            {!searchBarHidden && <TopSearchBar />}
+            {!searchBarHidden && isDefaultView && <TopSearchBar />}
             <NavToolbar
               searchBarHidden={searchBarHidden}
               sectionNav={state.sectionNav.node}
@@ -50,6 +55,7 @@ export function AppChrome({ children }: Props) {
               onToggleSearchBar={chrome.onToggleSearchBar}
               onToggleMegaMenu={chrome.onToggleMegaMenu}
               onToggleKioskMode={chrome.onToggleKioskMode}
+              isDefaultView={isDefaultView}
             />
           </div>
         </>
@@ -70,7 +76,7 @@ export function AppChrome({ children }: Props) {
   );
 }
 
-const getStyles = (theme: GrafanaTheme2) => {
+const getStyles = (theme: GrafanaTheme2, isDefaultView: boolean) => {
   const shadow = theme.isDark
     ? `0 0.6px 1.5px rgb(0 0 0), 0 2px 4px rgb(0 0 0 / 40%), 0 5px 10px rgb(0 0 0 / 23%)`
     : '0 4px 8px rgb(0 0 0 / 4%)';
@@ -79,7 +85,7 @@ const getStyles = (theme: GrafanaTheme2) => {
     content: css({
       display: 'flex',
       flexDirection: 'column',
-      paddingTop: TOP_BAR_LEVEL_HEIGHT * 2,
+      paddingTop: isDefaultView ? TOP_BAR_LEVEL_HEIGHT * 2 : TOP_BAR_LEVEL_HEIGHT,
       flexGrow: 1,
       height: '100%',
     }),
