@@ -79,11 +79,8 @@ export class DashboardLoaderSrv {
             appEvents.emit(AppEvents.alertError, ['Dashboard not found']);
             throw new Error('Dashboard not found');
           }
-
           const searchParam = urlUtil.getUrlSearchParams() || {};
-          const { viewmode = [] } = searchParam;
-
-          if (Array.isArray(viewmode) && viewmode.indexOf('edit') >= 0) {
+          if (_.isEqual(searchParam.viewmode, ['edit'])) {
             // 自定义仪表盘
             return {
               ...result,
@@ -100,7 +97,7 @@ export class DashboardLoaderSrv {
                 viewMode: 'edit',
               },
             };
-          } else if (Array.isArray(viewmode) && viewmode.indexOf('view') >= 0) {
+          } else if (_.isEqual(searchParam.viewmode, ['view'])) {
             // 查看仪表盘
             return {
               ...result,
