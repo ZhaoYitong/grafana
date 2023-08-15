@@ -1,9 +1,10 @@
 import { css } from '@emotion/css';
 import React from 'react';
 
-import { GrafanaTheme2, NavModelItem } from '@grafana/data';
+import { GrafanaTheme2, NavModelItem, urlUtil } from '@grafana/data';
 import { Components } from '@grafana/e2e-selectors';
 import { Icon, IconButton, ToolbarButton, useStyles2 } from '@grafana/ui';
+import { Breadcrumb } from 'app/core/components/Breadcrumbs/types';
 import { t } from 'app/core/internationalization';
 import { HOME_NAV_ID } from 'app/core/reducers/navModel';
 import { useSelector } from 'app/types';
@@ -39,11 +40,9 @@ export function NavToolbar({
   const styles = useStyles2(getStyles);
 
   const breadcrumbItems = buildBreadcrumbs(sectionNav, pageNav, homeNav);
-  const breadcrumbs = isDefaultView
-    ? breadcrumbItems
-    : breadcrumbItems.length
-    ? [breadcrumbItems[breadcrumbItems.length - 1]]
-    : [];
+  const params = urlUtil.getUrlSearchParams();
+  const isEditingPanel = params.editPanel != null;
+  const breadcrumbs = getBreadcCrumbs(isDefaultView, isEditingPanel, breadcrumbItems);
 
   return (
     <div data-testid={Components.NavToolbar.container} className={styles.pageToolbar}>
@@ -83,6 +82,26 @@ export function NavToolbar({
     </div>
   );
 }
+
+const getBreadcCrumbs = (
+  isDefaultView: boolean,
+  isEditingPanel: boolean,
+  breadcrumbItems: Breadcrumb[]
+): Breadcrumb[] => {
+  if (isDefaultView) {
+    return breadcrumbItems;
+  } else {
+    if (isEditingPanel) {
+      if (breadcrumbItems.length > 1) {
+        return breadcrumbItems.slice(breadcrumbItems.length - 2, breadcrumbItems.length);
+      } else {
+        return breadcrumbItems;
+      }
+    } else {
+      return breadcrumbItems.length ? [breadcrumbItems[breadcrumbItems.length - 1]] : [];
+    }
+  }
+};
 
 const getStyles = (theme: GrafanaTheme2) => {
   return {

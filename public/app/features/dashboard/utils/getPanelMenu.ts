@@ -150,7 +150,8 @@ export function getPanelMenu(
   if (
     contextSrv.hasAccessToExplore() &&
     !(panel.plugin && panel.plugin.meta.skipDataQuery) &&
-    panel.datasource?.uid !== SHARED_DASHBOARD_QUERY
+    panel.datasource?.uid !== SHARED_DASHBOARD_QUERY &&
+    dashboard.canExplorePanel()
   ) {
     menu.push({
       text: t('panel.header-menu.explore', `Explore`),

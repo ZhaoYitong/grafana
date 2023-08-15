@@ -527,6 +527,10 @@ export class DashboardModel implements TimeModel {
     return this.canEditPanel(this.getPanelById(id));
   }
 
+  canExplorePanel(): boolean {
+    return !Boolean(this.meta.viewMode);
+  }
+
   addPanel(panelData: any) {
     panelData.id = this.getNextPanelId();
 

@@ -35,7 +35,6 @@ export class DashboardLoaderSrv {
   }
 
   loadDashboard(type: UrlQueryValue, slug: string | undefined, uid: string | undefined): Promise<DashboardDTO> {
-    console.log(slug);
     let promise;
 
     if (type === 'script' && slug) {
