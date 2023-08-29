@@ -31,7 +31,7 @@ interface Props extends Pick<FormAPI<ImportDashboardDTO>, 'register' | 'errors' 
   uidReset: boolean;
   inputs: DashboardInputs;
   initialFolderUid: string;
-
+  disableOverwrite: boolean;
   onCancel: () => void;
   onUidReset: () => void;
   onSubmit: FormsOnSubmit<ImportDashboardDTO>;
@@ -49,6 +49,7 @@ export const ImportDashboardForm = ({
   onCancel,
   onSubmit,
   watch,
+  disableOverwrite,
 }: Props) => {
   const [isSubmitted, setSubmitted] = useState(false);
   const watchDataSources = watch('dataSources');
@@ -171,6 +172,7 @@ export const ImportDashboardForm = ({
           type="submit"
           data-testid={selectors.components.ImportDashboardForm.submit}
           variant={getButtonVariant(errors)}
+          disabled={disableOverwrite && !!(errors && (errors.title || errors.uid))}
           onClick={() => {
             setSubmitted(true);
           }}

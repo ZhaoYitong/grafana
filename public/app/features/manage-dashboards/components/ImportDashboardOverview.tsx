@@ -32,7 +32,9 @@ const mapDispatchToProps = {
 
 const connector = connect(mapStateToProps, mapDispatchToProps);
 
-type Props = ConnectedProps<typeof connector>;
+type Props = ConnectedProps<typeof connector> & {
+  viewmode?: string;
+};
 
 interface State {
   uidReset: boolean;
@@ -46,7 +48,7 @@ class ImportDashboardOverviewUnConnected extends PureComponent<Props, State> {
   onSubmit = (form: ImportDashboardDTO) => {
     reportInteraction(IMPORT_FINISHED_EVENT_NAME);
 
-    this.props.importDashboard(form);
+    this.props.importDashboard(form, this.props.viewmode || '');
   };
 
   onCancel = () => {
@@ -58,7 +60,7 @@ class ImportDashboardOverviewUnConnected extends PureComponent<Props, State> {
   };
 
   render() {
-    const { dashboard, inputs, meta, source, folder } = this.props;
+    const { dashboard, inputs, meta, source, folder, viewmode } = this.props;
     const { uidReset } = this.state;
 
     return (
@@ -111,6 +113,7 @@ class ImportDashboardOverviewUnConnected extends PureComponent<Props, State> {
               onUidReset={this.onUidReset}
               onSubmit={this.onSubmit}
               watch={watch}
+              disableOverwrite={viewmode === 'import'}
               initialFolderUid={folder.uid}
             />
           )}

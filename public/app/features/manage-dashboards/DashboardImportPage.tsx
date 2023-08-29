@@ -36,6 +36,7 @@ import { validateDashboardJson, validateGcomDashboard } from './utils/validation
 
 type DashboardImportPageRouteSearchParams = {
   gcomDashboardId?: string;
+  viewmode?: string;
 };
 
 type OwnProps = Themeable2 & GrafanaRouteComponentProps<{}, DashboardImportPageRouteSearchParams>;
@@ -195,7 +196,8 @@ class UnthemedDashboardImport extends PureComponent<Props> {
   };
 
   render() {
-    const { loadingState } = this.props;
+    const { loadingState, queryParams } = this.props;
+    const { viewmode } = queryParams;
 
     return (
       <Page navId="dashboards/browse" pageNav={this.pageNav}>
@@ -208,7 +210,7 @@ class UnthemedDashboardImport extends PureComponent<Props> {
             </VerticalGroup>
           )}
           {[LoadingState.Error, LoadingState.NotStarted].includes(loadingState) && this.renderImportForm()}
-          {loadingState === LoadingState.Done && <ImportDashboardOverview />}
+          {loadingState === LoadingState.Done && <ImportDashboardOverview viewmode={viewmode} />}
         </Page.Contents>
       </Page>
     );

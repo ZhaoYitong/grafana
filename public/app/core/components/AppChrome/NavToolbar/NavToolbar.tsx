@@ -24,6 +24,7 @@ export interface Props {
   pageNav?: NavModelItem;
   actions: React.ReactNode;
   isDefaultView: boolean;
+  isImportView: boolean;
 }
 
 export function NavToolbar({
@@ -35,6 +36,7 @@ export function NavToolbar({
   onToggleSearchBar,
   onToggleKioskMode,
   isDefaultView,
+  isImportView,
 }: Props) {
   const homeNav = useSelector((state) => state.navIndex)[HOME_NAV_ID];
   const styles = useStyles2(getStyles);
@@ -44,7 +46,9 @@ export function NavToolbar({
   const isEditingPanel = params.editPanel != null;
   const breadcrumbs = getBreadcCrumbs(isDefaultView, isEditingPanel, breadcrumbItems);
 
-  return (
+  return isImportView ? (
+    <></>
+  ) : (
     <div data-testid={Components.NavToolbar.container} className={styles.pageToolbar}>
       {isDefaultView && (
         <div className={styles.menuButton}>

@@ -195,7 +195,7 @@ export function clearLoadedDashboard(): ThunkResult<void> {
   };
 }
 
-export function importDashboard(importDashboardForm: ImportDashboardDTO): ThunkResult<void> {
+export function importDashboard(importDashboardForm: ImportDashboardDTO, viewmode: string): ThunkResult<void> {
   return async (dispatch, getState) => {
     const dashboard = getState().importDashboard.dashboard;
     const inputs = getState().importDashboard.inputs;
@@ -232,7 +232,20 @@ export function importDashboard(importDashboardForm: ImportDashboardDTO): ThunkR
     });
 
     const dashboardUrl = locationUtil.stripBaseFromUrl(result.importedUrl);
-    locationService.push(dashboardUrl);
+
+    if (viewmode === 'import') {
+      window.parent.postMessage(
+        {
+          code: 'IMPORT_GRAFANA_DASHBOARD_SUCCESS',
+          data: {
+            uid: result.uid,
+          },
+        },
+        '*'
+      );
+    } else {
+      locationService.push(dashboardUrl);
+    }
   };
 }
 

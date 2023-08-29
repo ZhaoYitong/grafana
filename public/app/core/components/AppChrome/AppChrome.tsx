@@ -1,8 +1,9 @@
 import { css, cx } from '@emotion/css';
 import classNames from 'classnames';
+import { isEqual } from 'lodash';
 import React, { PropsWithChildren } from 'react';
 
-import { GrafanaTheme2, PageLayoutType } from '@grafana/data';
+import { GrafanaTheme2, PageLayoutType, urlUtil } from '@grafana/data';
 import { useStyles2, LinkButton } from '@grafana/ui';
 import { useGrafana } from 'app/core/context/GrafanaContext';
 import { CommandPalette } from 'app/features/commandPalette/CommandPalette';
@@ -19,14 +20,15 @@ export interface Props extends PropsWithChildren<{}> {}
 export function AppChrome({ children }: Props) {
   const { chrome } = useGrafana();
   const state = chrome.useState();
-
+  const searchParam = urlUtil.getUrlSearchParams() || {};
+  const isImportView = isEqual(searchParam.viewmode, ['import']);
   const searchBarHidden = state.searchBarHidden || state.kioskMode === KioskMode.TV;
 
   const currentDashboard = useSelector((state) => state.dashboard);
   const currentMeta = currentDashboard.getModel()?.meta || {};
   const viewMode = currentMeta.viewMode || '';
   const isDefaultView = ['edit', 'view'].indexOf(viewMode) < 0;
-  const styles = useStyles2((themes: GrafanaTheme2) => getStyles(themes, isDefaultView));
+  const styles = useStyles2((themes: GrafanaTheme2) => getStyles(themes, isDefaultView, isImportView));
 
   const contentClass = cx({
     [styles.content]: true,
@@ -46,7 +48,7 @@ export function AppChrome({ children }: Props) {
             Skip to main content
           </LinkButton>
           <div className={cx(styles.topNav)}>
-            {!searchBarHidden && isDefaultView && <TopSearchBar />}
+            {!searchBarHidden && isDefaultView && !isImportView && <TopSearchBar />}
             <NavToolbar
               searchBarHidden={searchBarHidden}
               sectionNav={state.sectionNav.node}
@@ -56,13 +58,16 @@ export function AppChrome({ children }: Props) {
               onToggleMegaMenu={chrome.onToggleMegaMenu}
               onToggleKioskMode={chrome.onToggleKioskMode}
               isDefaultView={isDefaultView}
+              isImportView={isImportView}
             />
           </div>
         </>
       )}
       <main className={contentClass} id="pageContent">
         <div className={styles.panes}>
-          {state.layout === PageLayoutType.Standard && state.sectionNav && <SectionNav model={state.sectionNav} />}
+          {state.layout === PageLayoutType.Standard && state.sectionNav && !isImportView && (
+            <SectionNav model={state.sectionNav} />
+          )}
           <div className={styles.pageContainer}>{children}</div>
         </div>
       </main>
@@ -76,16 +81,29 @@ export function AppChrome({ children }: Props) {
   );
 }
 
-const getStyles = (theme: GrafanaTheme2, isDefaultView: boolean) => {
+const getStyles = (theme: GrafanaTheme2, isDefaultView: boolean, isImportView: boolean) => {
   const shadow = theme.isDark
     ? `0 0.6px 1.5px rgb(0 0 0), 0 2px 4px rgb(0 0 0 / 40%), 0 5px 10px rgb(0 0 0 / 23%)`
     : '0 4px 8px rgb(0 0 0 / 4%)';
+
+  const calContentPaddingTop = (isDefaultViewing: boolean, isImportViewing: boolean) => {
+    // for viewmode: import. when importing, no padding, no nav, no searchBar, no breadcrumb
+    if (isImportViewing) {
+      return 0;
+    } else if (isDefaultViewing) {
+      // original viewing
+      return TOP_BAR_LEVEL_HEIGHT * 2;
+    } else {
+      // for viewmode: view & edit
+      return TOP_BAR_LEVEL_HEIGHT;
+    }
+  };
 
   return {
     content: css({
       display: 'flex',
       flexDirection: 'column',
-      paddingTop: isDefaultView ? TOP_BAR_LEVEL_HEIGHT * 2 : TOP_BAR_LEVEL_HEIGHT,
+      paddingTop: calContentPaddingTop(isDefaultView, isImportView),
       flexGrow: 1,
       height: '100%',
     }),
