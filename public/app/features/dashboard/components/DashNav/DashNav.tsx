@@ -186,7 +186,7 @@ export const DashNav = React.memo<Props>((props) => {
       );
     }
 
-    if (canShare && !viewMode) {
+    if (canShare) {
       buttons.push(<ShareButton key="button-share" dashboard={dashboard} />);
     }
 

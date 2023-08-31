@@ -88,7 +88,7 @@ export class DashboardLoaderSrv {
                 canSave: true,
                 canEdit: true,
                 canDelete: false,
-                canShare: false,
+                canShare: true,
                 canStar: false,
                 canAdmin: true,
                 canMakeEditable: true,
