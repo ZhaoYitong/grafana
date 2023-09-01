@@ -123,19 +123,19 @@
       "import": "从库导入",
       "paste-panel": "粘贴面板",
       "row": "行",
-      "visualization": "可视化",
+      "visualization": "展示项",
       "widget": ""
     },
     "empty": {
-      "add-import-body": "导入与其他仪表板共享的可视化。",
+      "add-import-body": "导入与其他仪表板共享的展示项。",
       "add-import-button": "导入库面板",
       "add-import-header": "导入面板",
-      "add-row-body": "将您的可视化分组成可扩展部分。",
+      "add-row-body": "将您的展示项分组成可扩展部分。",
       "add-row-button": "添加行",
       "add-row-header": "添加一行",
       "add-visualization-body": "选择一个数据源，然后用图表、统计信息和表格查询您的数据以及将其可视化，或创建列表、Markdown 和其他小部件。",
-      "add-visualization-button": "添加可视化",
-      "add-visualization-header": "通过添加可视化开始您的新仪表板",
+      "add-visualization-button": "添加展示项",
+      "add-visualization-header": "通过添加展示项开始您的新仪表板",
       "add-widget-body": "",
       "add-widget-button": "",
       "add-widget-header": ""
@@ -173,7 +173,7 @@
     "inspect-json": {
       "dataframe-description": "未应用转换和字段配置的原始数据。",
       "dataframe-label": "DataFrame JSON （来自查询）",
-      "panel-data-description": "发送至面板可视化的原始模型",
+      "panel-data-description": "发送至面板展示项的原始模型",
       "panel-data-label": "面板数据",
       "panel-json-description": "保存在仪表板 JSON 中的模型，用于配置整体运作方式。",
       "panel-json-label": "面板 JSON",
